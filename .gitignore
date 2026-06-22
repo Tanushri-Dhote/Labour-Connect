@@ -3,6 +3,8 @@ node_modules/
 
 # Environment variables
 .env
+test-user.js
+test-msg91.js
 
 # Logs
 logs
