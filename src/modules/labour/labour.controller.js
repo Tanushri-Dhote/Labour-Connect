@@ -1,8 +1,15 @@
 const {
-  savePersonalInfoService,  saveAddressInfoService, saveWorkInfoService, saveChargeInfoService,
-  saveAvailabilityInfoService,saveExperienceInfoService,
-
+  savePersonalInfoService,
+  saveAddressInfoService,
+  saveWorkInfoService,
+  saveChargeInfoService,
+  saveAvailabilityInfoService,
+  saveExperienceInfoService,
+  getLabourProfileService,
+  deleteLabourProfileService,
+  updateLabourProfileService,
 } = require("./labour.service");
+
 
 const fs = require("fs");
 const path = require("path");
@@ -230,15 +237,78 @@ const saveExperienceInfo = async (
   }
 };
 
+const getLabourProfile = async (req, reply) => {
+  try {
+    const result = await getLabourProfileService(req.user.userId);
+
+    return reply.code(200).send({
+      success: true,
+      message: "Labour profile fetched successfully",
+      data: result,
+    });
+  } catch (error) {
+    return reply.code(400).send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const updateLabourProfile = async (
+  req,
+  reply
+) => {
+  try {
+    const result =
+      await updateLabourProfileService(
+        req.user.userId,
+        req.body
+      );
+
+    return reply.send({
+      success: true,
+      message:
+        "Profile updated successfully",
+      data: result,
+    });
+  } catch (error) {
+    return reply.code(400).send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const deleteLabourProfile = async (req, reply) => {
+  try {
+    const result = await deleteLabourProfileService(req.user.userId);
+
+    return reply.code(200).send({
+      success: true,
+      message: "Labour profile deleted successfully",
+      data: result,
+    });
+  } catch (error) {
+    return reply.code(400).send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   savePersonalInfo,
   saveAddressInfo,
   saveWorkInfo,
- saveChargeInfo,
- saveAvailabilityInfo,
- saveExperienceInfo,
- uploadProfileImage
+  saveChargeInfo,
+  saveAvailabilityInfo,
+  saveExperienceInfo,
+  uploadProfileImage,
+  getLabourProfile,
+  updateLabourProfile,
+  deleteLabourProfile,
 };
+
 
 
 

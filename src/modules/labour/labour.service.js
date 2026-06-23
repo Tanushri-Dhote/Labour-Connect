@@ -1,9 +1,13 @@
+const fs = require("fs");
+const path = require("path");
+
 const User = require("../../models/User");
 const LabourProfile = require("../../models/LabourProfile");
 const Category = require("../../models/Category");
 const Skill = require("../../models/Skill");
 
 const savePersonalInfoService = async (
+
   userId,
   data
 ) => {
@@ -251,6 +255,76 @@ const saveExperienceInfoService = async (
 };
 
 
+const getLabourProfileService = async (userId) => {
+  const labourProfile = await LabourProfile.findOne({ userId })
+    .populate({ path: "categoryId", select: "name" })
+    .populate({ path: "skills", select: "name" });
+
+  if (!labourProfile) {
+    throw new Error("Labour profile not found");
+  }
+
+  return labourProfile;
+};
+
+
+const updateLabourProfileService = async (
+  userId,
+  body
+) => {
+  const profile =
+    await LabourProfile.findOneAndUpdate(
+      { userId },
+      body,
+      { new: true }
+    );
+
+  if (!profile) {
+    throw new Error(
+      "Labour profile not found"
+    );
+  }
+
+  return profile;
+};
+
+const deleteLabourProfileService = async (userId) => {
+  const labourProfile = await LabourProfile.findOne({ userId });
+
+  if (!labourProfile) {
+    throw new Error("Labour profile not found");
+  }
+
+  // Delete profile image file if present
+  if (labourProfile.profileImage) {
+    // Stored as `/uploads/profile-images/<filename>` in controller
+    const parts = labourProfile.profileImage.split("/");
+    const fileName = parts[parts.length - 1];
+
+    if (fileName) {
+      const filePath = path.join(
+        process.cwd(),
+        "uploads/profile-images",
+        fileName
+      );
+
+      fs.promises
+        .unlink(filePath)
+        .catch(() => {
+          // Ignore if file doesn't exist
+        });
+
+    }
+  }
+
+  // Delete document
+  const deleted = await LabourProfile.findOneAndDelete({
+    userId,
+  });
+
+  return deleted;
+};
+
 module.exports = {
   savePersonalInfoService,
   saveAddressInfoService,
@@ -258,5 +332,9 @@ module.exports = {
   saveChargeInfoService,
   saveAvailabilityInfoService,
   saveExperienceInfoService,
+  getLabourProfileService,
+  deleteLabourProfileService,
+  updateLabourProfileService
 
 };
+

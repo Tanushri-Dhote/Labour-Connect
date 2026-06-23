@@ -4,12 +4,12 @@ const authenticate = require("../../middleware/auth.middleware");
 async function labourRoutes(fastify) {
 
   fastify.post(
-  "/upload-profile-image",
-  {
-    preHandler: authenticate,
-  },
-  labourController.uploadProfileImage
-);
+    "/upload-profile-image",
+    {
+      preHandler: authenticate,
+    },
+    labourController.uploadProfileImage
+  );
 
   fastify.post(
     "/personal-info",
@@ -19,7 +19,7 @@ async function labourRoutes(fastify) {
     labourController.savePersonalInfo
   );
 
-   fastify.post(
+  fastify.post(
     "/address-info",
     {
       preHandler: authenticate,
@@ -28,36 +28,60 @@ async function labourRoutes(fastify) {
   );
 
   fastify.post(
-  "/work-info",
+    "/work-info",
+    {
+      preHandler: authenticate,
+    },
+    labourController.saveWorkInfo
+  );
+
+  fastify.post(
+    "/charge-info",
+    {
+      preHandler: authenticate,
+    },
+    labourController.saveChargeInfo
+  );
+
+  fastify.post(
+    "/availability-info",
+    {
+      preHandler: authenticate,
+    },
+    labourController.saveAvailabilityInfo
+  );
+
+  fastify.post(
+    "/experience-info",
+    {
+      preHandler: authenticate,
+    },
+    labourController.saveExperienceInfo
+  );
+
+    fastify.get(
+    "/profile",
+    {
+      preHandler: authenticate,
+    },
+    labourController.getLabourProfile
+  );
+  fastify.put(
+  "/profile",
   {
     preHandler: authenticate,
   },
-  labourController.saveWorkInfo
+  labourController.updateLabourProfile
 );
 
-fastify.post(
-  "/charge-info",
-  {
-    preHandler: authenticate,
-  },
-  labourController.saveChargeInfo
-);
-
-fastify.post(
-  "/availability-info",
-  {
-    preHandler: authenticate,
-  },
-  labourController.saveAvailabilityInfo
-);
-
-fastify.post(
-  "/experience-info",
-  {
-    preHandler: authenticate,
-  },
-  labourController.saveExperienceInfo
-);
+  fastify.delete(
+    "/profile",
+    {
+      preHandler: authenticate,
+    },
+    labourController.deleteLabourProfile
+  );
 }
+
 
 module.exports = labourRoutes;
