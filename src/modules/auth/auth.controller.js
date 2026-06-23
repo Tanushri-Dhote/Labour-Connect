@@ -1,4 +1,4 @@
-const { sendOtpService ,  verifyOtpService,} = require("./auth.service");
+const { sendOtpService ,  verifyOtpService, selectRoleService} = require("./auth.service");
 
 const sendOtp = async (req, reply) => {
   try {
@@ -66,7 +66,33 @@ const verifyOtp = async (req, reply) => {
     });
   }
 };
+
+const selectRoleController = async (request, reply) => {
+  try {
+    const { role } = request.body;
+
+    const user = await selectRoleService(
+      request.user.userId,
+      role
+    );
+
+    return reply.send({
+      success: true,
+      message: "Role selected successfully",
+      data: user,
+    });
+  } catch (error) {
+    return reply.status(400).send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+
 module.exports = {
   sendOtp,
   verifyOtp,
+  selectRoleController,
 };

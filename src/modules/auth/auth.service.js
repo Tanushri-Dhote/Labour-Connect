@@ -67,7 +67,19 @@ const verifyOtpService = async (mobileNumber, otp) => {
   };
 };
 
+
+const selectRoleService = async (userId, role) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new Error("User not found");
+  }
+  user.role = role;
+  await user.save();
+  return user;
+};
+
 module.exports = {
   sendOtpService,
   verifyOtpService,
+  selectRoleService,
 };

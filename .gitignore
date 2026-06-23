@@ -5,6 +5,7 @@ node_modules/
 .env
 test-user.js
 test-msg91.js
+seedCategoriesAndSkills.js
 
 # Logs
 logs
