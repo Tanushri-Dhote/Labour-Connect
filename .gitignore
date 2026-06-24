@@ -6,6 +6,7 @@ node_modules/
 test-user.js
 test-msg91.js
 seedCategoriesAndSkills.js
+createAdmin.js
 
 # Logs
 logs

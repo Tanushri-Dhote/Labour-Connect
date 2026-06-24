@@ -5,8 +5,8 @@ const categoryRoutes = require("./modules/category/category.routes");
 const skillRoutes = require("./modules/skill/skill.routes");
 const multipart = require("@fastify/multipart");
 const path = require("path");
-const fastifyStatic =
-  require("@fastify/static");
+const fastifyStatic = require("@fastify/static");
+const adminRoutes = require("./modules/admin/admin.routes");
 
   
 
@@ -23,10 +23,12 @@ app.get("/", async () => {
     message: "LabourConnect API Running"
   };
 });
+// labaour login
 app.register(authRoutes, {
   prefix: "/api/auth",
 });
 
+// labaour profile
 app.register(labourRoutes, {
   prefix: "/api/labour",
 });
@@ -45,6 +47,11 @@ app.register(fastifyStatic, {
     "../uploads"
   ),
   prefix: "/uploads/",
+});
+
+// Admin
+app.register(adminRoutes, {
+  prefix: "/api/admin",
 });
 
 
