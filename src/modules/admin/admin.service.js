@@ -1,3 +1,4 @@
+const LabourProfile = require("../../models/LabourProfile");
 const Admin = require("../../models/Admin");
 const User = require("../../models/User");
 const Category = require("../../models/Category");
@@ -72,22 +73,31 @@ const getProfileService = async (
   return admin;
 };
 
-const getDashboardService = async () => {
+const getDashboardService = async () =>
+   {
   const totalLabours =
-    await User.countDocuments({
-      role: "labour",
-    });
+    await LabourProfile.countDocuments();
 
   const totalEmployers =
     await User.countDocuments({
-      role: "customer",
+      role: "employer",
     });
 
-  const totalCategories =
-    await Category.countDocuments();
+  const activeCategories = await Category.countDocuments({
+    status: "active",
+  });
 
-  const totalSkills =
-    await Skill.countDocuments();
+  const inactiveCategories = await Category.countDocuments({
+    status: "inactive",
+  });
+
+  const activeSkills = await Skill.countDocuments({
+    status: "active",
+  });
+
+  const inactiveSkills = await Skill.countDocuments({
+    status: "inactive",
+  });
 
   const totalActiveUsers =
     await User.countDocuments({
@@ -97,16 +107,148 @@ const getDashboardService = async () => {
   return {
     totalLabours,
     totalEmployers,
-    totalCategories,
-    totalSkills,
+    activeCategories,
+    inactiveCategories,
+    activeSkills,
+    inactiveSkills,
     totalActiveUsers,
   };
 };
 
+// Labour Management
+
+const getAllLaboursService =async () => {
+    return await LabourProfile.find()
+      .populate(
+        "categoryId",
+        "name"
+      )
+      .populate(
+        "skills",
+        "name"
+      )
+      .sort({
+        createdAt: -1,
+      });
+  };
+
+const getLabourByIdService = async (
+  labourId
+) => {
+  const labour =
+    await LabourProfile.findById(
+      labourId
+    )
+      .populate(
+        "categoryId",
+        "name"
+      )
+      .populate(
+        "skills",
+        "name"
+      );
+
+  if (!labour) {
+    throw new Error(
+      "Labour not found"
+    );
+  }
+
+  return labour;
+};
+
+const blockLabourService = async (
+  labourId
+) => {
+  const labour =
+    await LabourProfile.findById(
+      labourId
+    );
+
+  if (!labour) {
+    throw new Error(
+      "Labour not found"
+    );
+  }
+
+  const user =
+    await User.findByIdAndUpdate(
+      labour.userId,
+      {
+        status: "blocked",
+      },
+      {
+        new: true,
+      }
+    );
+
+  return user;
+};
+
+const unblockLabourService = async (
+  labourId
+) => {
+  const labour =
+    await LabourProfile.findById(
+      labourId
+    );
+
+  if (!labour) {
+    throw new Error(
+      "Labour not found"
+    );
+  }
+
+  const user =
+    await User.findByIdAndUpdate(
+      labour.userId,
+      {
+        status: "active",
+      },
+      {
+        new: true,
+      }
+    );
+
+  return user;
+};
+
+const updateLabourStatusService = async (labourId, body) => {
+    const { status } = body;
+
+    const labour =
+      await LabourProfile.findById(
+        labourId
+      );
+
+    if (!labour) {
+      throw new Error(
+        "Labour not found"
+      );
+    }
+
+    const user =
+      await User.findByIdAndUpdate(
+        labour.userId,
+        {
+          status,
+        },
+        {
+          new: true,
+        }
+      );
+
+    return user;
+  };
 
 
 module.exports = {
   adminLoginService,
   getProfileService,
   getDashboardService,
+  getAllLaboursService,
+  getLabourByIdService,
+  blockLabourService,
+  unblockLabourService,
+  updateLabourStatusService,
 };

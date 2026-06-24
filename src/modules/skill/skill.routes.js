@@ -9,6 +9,38 @@ async function skillRoutes(fastify) {
     },
     skillController.createSkill
   );
+
+  fastify.get(
+    "/skills",
+    {
+      preHandler: adminAuth,
+    },
+    skillController.getSkills
+  );
+
+  fastify.get(
+    "/skills/:id",
+    {
+      preHandler: adminAuth,
+    },
+    skillController.getSkillById
+  );
+
+  fastify.put(
+    "/skills/:id",
+    {
+      preHandler: adminAuth,
+    },
+    skillController.updateSkill
+  );
+
+  fastify.delete(
+  "/skills/:id",
+  {
+    preHandler: adminAuth,
+  },
+  skillController.deleteSkill
+);
 }
 
 module.exports = skillRoutes;
