@@ -27,6 +27,45 @@ async function adminRoutes(
   },
   adminController.getDashboard
 );
+
+// labour managemnt
+fastify.get(
+  "/labours",
+  {
+    preHandler: adminAuth,
+  },
+  adminController.getAllLabours
+);
+fastify.get(
+  "/labours/:id",
+  {
+    preHandler: adminAuth,
+  },
+  adminController.getLabourById
+);
+
+fastify.put(
+  "/labours/:id/block",
+  {
+    preHandler: adminAuth,
+  },
+  adminController.blockLabour
+);
+fastify.put(
+  "/labours/:id/unblock",
+  {
+    preHandler: adminAuth,
+  },
+  adminController.unblockLabour
+);
+
+fastify.put(
+  "/labours/:id/status",
+  {
+    preHandler: adminAuth,
+  },
+  adminController.updateLabourStatus
+);
 }
 
 module.exports = adminRoutes;
