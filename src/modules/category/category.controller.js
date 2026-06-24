@@ -3,9 +3,11 @@ const {
   createCategoryService,
   getCategoriesService,
   getCategoryByIdService,
-   updateCategoryService,
-    deleteCategoryService,
+  updateCategoryService,
+  deleteCategoryService,
+  getActiveCategoriesService,
 } = require("./category.service");
+const { getActiveSkillsByCategoryService } = require("../skill/skill.service");
 
 
 const createCategory =
@@ -123,10 +125,42 @@ const deleteCategory = async (
   }
 };
 
+const getActiveCategories = async (req, reply) => {
+  try {
+    const categories = await getActiveCategoriesService();
+    return reply.send({
+      success: true,
+      data: categories,
+    });
+  } catch (error) {
+    return reply.code(400).send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const getActiveSkillsByCategory = async (req, reply) => {
+  try {
+    const skills = await getActiveSkillsByCategoryService(req.params.categoryId);
+    return reply.send({
+      success: true,
+      data: skills,
+    });
+  } catch (error) {
+    return reply.code(400).send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createCategory,
   getCategories,
   getCategoryById,
   updateCategory,
   deleteCategory,
+  getActiveCategories,
+  getActiveSkillsByCategory,
 };

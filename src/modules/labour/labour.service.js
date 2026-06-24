@@ -78,6 +78,13 @@ const saveAddressInfoService = async (
   labourProfile.currentLongitude =
     data.currentLongitude;
 
+  if (data.currentLongitude !== undefined && data.currentLatitude !== undefined) {
+    labourProfile.location = {
+      type: "Point",
+      coordinates: [Number(data.currentLongitude), Number(data.currentLatitude)],
+    };
+  }
+
  labourProfile.preferredWorkLocation =
   data.preferredWorkLocation;
 labourProfile.preferredWorkLatitude =
@@ -246,9 +253,6 @@ const saveExperienceInfoService = async (
   labourProfile.additionalInfo =
     additionalInfo;
 
-  labourProfile.isProfileCompleted =
-    true;
-
   await labourProfile.save();
 
   return labourProfile;
@@ -325,6 +329,97 @@ const deleteLabourProfileService = async (userId) => {
   return deleted;
 };
 
+const updateLabourStatusService = async (userId, isOnline) => {
+  const profile = await LabourProfile.findOne({ userId });
+  if (!profile) {
+    throw new Error("Labour profile not found");
+  }
+  profile.isOnline = isOnline;
+  await profile.save();
+  return profile;
+};
+
+const updateLabourLocationService = async (userId, data) => {
+  const profile = await LabourProfile.findOne({ userId });
+  if (!profile) {
+    throw new Error("Labour profile not found");
+  }
+  
+  if (data.currentLocation) profile.currentLocation = data.currentLocation;
+  if (data.latitude !== undefined) profile.currentLatitude = Number(data.latitude);
+  if (data.longitude !== undefined) profile.currentLongitude = Number(data.longitude);
+
+  if (data.longitude !== undefined && data.latitude !== undefined) {
+    profile.location = {
+      type: "Point",
+      coordinates: [Number(data.longitude), Number(data.latitude)]
+    };
+  }
+
+  await profile.save();
+  return profile;
+};
+
+const searchLaboursService = async (query) => {
+  const { categoryId, skills, latitude, longitude, radius = 10 } = query;
+  
+  const filter = {
+    isProfileCompleted: true,
+    isOnline: true,
+    adminApprovalStatus: "approved"
+  };
+
+  if (categoryId) {
+    filter.categoryId = categoryId;
+  }
+
+  if (skills) {
+    const skillList = Array.isArray(skills) ? skills : skills.split(',');
+    filter.skills = { $in: skillList };
+  }
+
+  if (latitude && longitude) {
+    filter.location = {
+      $near: {
+        $geometry: {
+          type: "Point",
+          coordinates: [Number(longitude), Number(latitude)]
+        },
+        $maxDistance: Number(radius) * 1000 // distance in meters
+      }
+    };
+  }
+
+  return await LabourProfile.find(filter)
+    .populate({ path: "userId", select: "mobile" })
+    .populate({ path: "categoryId", select: "name" })
+    .populate({ path: "skills", select: "name" });
+};
+
+const submitRegistrationService = async (userId, data) => {
+  const { documentType } = data;
+  const labourProfile = await LabourProfile.findOne({ userId });
+  
+  if (!labourProfile) {
+    throw new Error("Labour profile not found");
+  }
+
+  if (!labourProfile.documentUrl) {
+    throw new Error("Please upload registration document first");
+  }
+
+  if (documentType) {
+    labourProfile.documentType = documentType;
+  }
+
+  labourProfile.registrationFeeStatus = "paid"; // Mocked payment
+  labourProfile.adminApprovalStatus = "pending";
+  labourProfile.isProfileCompleted = true; // User onboarding steps done
+
+  await labourProfile.save();
+  return labourProfile;
+};
+
 module.exports = {
   savePersonalInfoService,
   saveAddressInfoService,
@@ -334,7 +429,10 @@ module.exports = {
   saveExperienceInfoService,
   getLabourProfileService,
   deleteLabourProfileService,
-  updateLabourProfileService
-
+  updateLabourProfileService,
+  updateLabourStatusService,
+  updateLabourLocationService,
+  searchLaboursService,
+  submitRegistrationService,
 };
 

@@ -132,11 +132,19 @@ const deleteSkillService = async (
     return updatedSkill;
 };
 
+const getActiveSkillsByCategoryService = async (categoryId) => {
+  const category = await Category.findById(categoryId);
+  if (!category) {
+    throw new Error("Category not found");
+  }
+  return await Skill.find({ categoryId, status: "active" }).sort({ name: 1 });
+};
+
 module.exports = {
     createSkillService,
     getSkillsService,
     getSkillByIdService,
     updateSkillService,
-    deleteSkillService
-
+    deleteSkillService,
+    getActiveSkillsByCategoryService,
 };

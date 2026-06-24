@@ -7,6 +7,9 @@ const multipart = require("@fastify/multipart");
 const path = require("path");
 const fastifyStatic = require("@fastify/static");
 const adminRoutes = require("./modules/admin/admin.routes");
+const helmet = require("@fastify/helmet");
+const cors = require("@fastify/cors");
+const categoryClientRoutes = require("./modules/category/category.client-routes");
 
   
 
@@ -14,6 +17,8 @@ const app = Fastify({
   logger: true
 });
 
+app.register(helmet);
+app.register(cors);
 app.register(multipart);
 
 
@@ -52,6 +57,10 @@ app.register(categoryRoutes, {
 
 app.register(skillRoutes, {
   prefix: "/api/admin",
+});
+
+app.register(categoryClientRoutes, {
+  prefix: "/api",
 });
 
 

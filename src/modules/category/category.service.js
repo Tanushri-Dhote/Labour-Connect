@@ -98,6 +98,10 @@ const deleteCategoryService = async (
   return updatedCategory;
 };
 
+const getActiveCategoriesService = async () => {
+  return await Category.find({ status: "active" }).sort({ name: 1 });
+};
+
 
 module.exports = {
  createCategoryService,
@@ -105,4 +109,5 @@ module.exports = {
   getCategoryByIdService,
   updateCategoryService,
   deleteCategoryService,
+  getActiveCategoriesService,
 };

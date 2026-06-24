@@ -8,6 +8,10 @@ const {
   getLabourProfileService,
   deleteLabourProfileService,
   updateLabourProfileService,
+  updateLabourStatusService,
+  updateLabourLocationService,
+  searchLaboursService,
+  submitRegistrationService,
 } = require("./labour.service");
 
 
@@ -32,7 +36,7 @@ const uploadProfileImage = async (
     const fileName =
       Date.now() +
       "-" +
-      data.filename;
+      path.basename(data.filename);
 
     const filePath = path.join(
       process.cwd(),
@@ -296,6 +300,134 @@ const deleteLabourProfile = async (req, reply) => {
   }
 };
 
+const updateLabourStatus = async (req, reply) => {
+  try {
+    const { isOnline } = req.body;
+    if (isOnline === undefined) {
+      return reply.code(400).send({
+        success: false,
+        message: "isOnline field is required",
+      });
+    }
+
+    const result = await updateLabourStatusService(req.user.userId, isOnline);
+    return reply.send({
+      success: true,
+      message: "Status updated successfully",
+      data: result,
+    });
+  } catch (error) {
+    return reply.code(400).send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const updateLabourLocation = async (req, reply) => {
+  try {
+    const result = await updateLabourLocationService(req.user.userId, req.body);
+    return reply.send({
+      success: true,
+      message: "Location updated successfully",
+      data: result,
+    });
+  } catch (error) {
+    return reply.code(400).send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const searchLabours = async (req, reply) => {
+  try {
+    const result = await searchLaboursService(req.query);
+    return reply.send({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    return reply.code(400).send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const uploadRegistrationDocument = async (request, reply) => {
+  try {
+    const data = await request.file();
+
+    if (!data) {
+      return reply.code(400).send({
+        success: false,
+        message: "Document file is required",
+      });
+    }
+
+    const fileName = Date.now() + "-" + path.basename(data.filename);
+    const dirPath = path.join(process.cwd(), "uploads/registration-documents");
+    
+    // Ensure directory exists
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true });
+    }
+
+    const filePath = path.join(dirPath, fileName);
+
+    await new Promise((resolve, reject) => {
+      const writeStream = fs.createWriteStream(filePath);
+      data.file.pipe(writeStream);
+      writeStream.on("finish", resolve);
+      writeStream.on("error", reject);
+    });
+
+    const documentUrl = `/uploads/registration-documents/${fileName}`;
+
+    const labourProfile = await LabourProfile.findOneAndUpdate(
+      { userId: request.user.userId },
+      { documentUrl },
+      { new: true }
+    );
+
+    if (!labourProfile) {
+      return reply.code(400).send({
+        success: false,
+        message: "Please complete step 1 personal info first",
+      });
+    }
+
+    return reply.send({
+      success: true,
+      message: "Document uploaded successfully",
+      documentUrl,
+      data: labourProfile,
+    });
+  } catch (error) {
+    return reply.code(400).send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const submitRegistration = async (request, reply) => {
+  try {
+    const result = await submitRegistrationService(request.user.userId, request.body || {});
+    return reply.send({
+      success: true,
+      message: "Registration submitted successfully. Pending admin approval.",
+      data: result,
+    });
+  } catch (error) {
+    return reply.code(400).send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   savePersonalInfo,
   saveAddressInfo,
@@ -307,6 +439,11 @@ module.exports = {
   getLabourProfile,
   updateLabourProfile,
   deleteLabourProfile,
+  updateLabourStatus,
+  updateLabourLocation,
+  searchLabours,
+  uploadRegistrationDocument,
+  submitRegistration,
 };
 
 

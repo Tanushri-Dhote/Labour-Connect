@@ -161,12 +161,53 @@ const labourProfileSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+
+        isOnline: {
+            type: Boolean,
+            default: true,
+        },
+
+        registrationFeeStatus: {
+            type: String,
+            enum: ["pending", "paid"],
+            default: "pending",
+        },
+
+        documentUrl: {
+            type: String,
+            default: null,
+        },
+
+        documentType: {
+            type: String,
+            default: null,
+        },
+
+        adminApprovalStatus: {
+            type: String,
+            enum: ["pending", "approved", "rejected"],
+            default: "pending",
+        },
+
+        location: {
+            type: {
+                type: String,
+                enum: ["Point"],
+                default: "Point",
+            },
+            coordinates: {
+                type: [Number], // [longitude, latitude]
+                default: [0, 0],
+            },
+        },
     },
     {
         timestamps: true,
         versionKey: false,
     }
 );
+
+labourProfileSchema.index({ location: "2dsphere" });
 
 module.exports = mongoose.model(
     "LabourProfile",

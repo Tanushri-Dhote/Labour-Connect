@@ -81,6 +81,46 @@ async function labourRoutes(fastify) {
     },
     labourController.deleteLabourProfile
   );
+
+  fastify.patch(
+    "/status",
+    {
+      preHandler: authenticate,
+    },
+    labourController.updateLabourStatus
+  );
+
+  fastify.patch(
+    "/location",
+    {
+      preHandler: authenticate,
+    },
+    labourController.updateLabourLocation
+  );
+
+  fastify.get(
+    "/search",
+    {
+      preHandler: authenticate,
+    },
+    labourController.searchLabours
+  );
+
+  fastify.post(
+    "/upload-document",
+    {
+      preHandler: authenticate,
+    },
+    labourController.uploadRegistrationDocument
+  );
+
+  fastify.post(
+    "/submit-registration",
+    {
+      preHandler: authenticate,
+    },
+    labourController.submitRegistration
+  );
 }
 
 
