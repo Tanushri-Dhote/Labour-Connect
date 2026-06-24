@@ -33,14 +33,6 @@ app.register(labourRoutes, {
   prefix: "/api/labour",
 });
 
-app.register(categoryRoutes, {
-  prefix: "/api/category",
-});
-
-app.register(skillRoutes, {
-  prefix: "/api/skill",
-});
-
 app.register(fastifyStatic, {
   root: path.join(
     __dirname,
@@ -51,6 +43,14 @@ app.register(fastifyStatic, {
 
 // Admin
 app.register(adminRoutes, {
+  prefix: "/api/admin",
+});
+
+app.register(categoryRoutes, {
+  prefix: "/api/admin",
+});
+
+app.register(skillRoutes, {
   prefix: "/api/admin",
 });
 

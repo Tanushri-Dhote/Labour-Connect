@@ -1,24 +1,31 @@
-const Skill = require("../../models/Skill");
+const {
+  createSkillService,
+} = require("./skill.service");
 
-const getSkills = async (
+const createSkill = async (
   req,
   reply
 ) => {
-  const { categoryId } =
-    req.params;
+  try {
+    const skill =
+      await createSkillService(
+        req.body
+      );
 
-  const skills =
-    await Skill.find({
-      categoryId,
-      status: true,
+    return reply.send({
+      success: true,
+      message:
+        "Skill created successfully",
+      data: skill,
     });
-
-  return reply.send({
-    success: true,
-    data: skills,
-  });
+  } catch (error) {
+    return reply.code(400).send({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 module.exports = {
-  getSkills,
+  createSkill,
 };

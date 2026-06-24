@@ -15,8 +15,12 @@ const skillSchema = new mongoose.Schema(
     },
 
     status: {
-      type: Boolean,
-      default: true,
+      type: String,
+      enum: [
+        "active",
+        "inactive",
+      ],
+      default: "active",
     },
   },
   {
