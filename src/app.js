@@ -10,6 +10,7 @@ const adminRoutes = require("./modules/admin/admin.routes");
 const helmet = require("@fastify/helmet");
 const cors = require("@fastify/cors");
 const categoryClientRoutes = require("./modules/category/category.client-routes");
+const employerRoutes = require("./modules/employer/employer.routes");
 
   
 
@@ -63,5 +64,13 @@ app.register(categoryClientRoutes, {
   prefix: "/api",
 });
 
+// employer
+app.register(
+  employerRoutes,
+  {
+    prefix:
+      "/api/employer",
+  }
+);
 
 module.exports = app;
