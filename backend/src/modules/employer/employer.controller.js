@@ -8,6 +8,8 @@ const {
   getLaboursService,
 
   contactLabourService, getContactHistoryService,
+// employer subscription
+   getSubscriptionPlansService,purchaseSubscriptionService,getSubscriptionHistoryService,
 } = require("./employer.service");
 
 const saveCompanyInfo = async (req, reply) => {
@@ -270,6 +272,83 @@ const getContactHistory = async (req, reply) => {
     }
   }; 
 
+  // employer subscription
+  const getSubscriptionPlans = async (req, reply) => {
+
+    try {
+
+      const result =
+        await getSubscriptionPlansService();
+
+      return reply.send({
+        success: true,
+        data: result,
+      });
+
+    } catch (error) {
+
+      return reply.code(400).send({
+        success: false,
+        message: error.message,
+      });
+
+    }
+
+  };
+
+  const purchaseSubscription =async (req, reply) => {
+
+    try {
+
+      const result =
+        await purchaseSubscriptionService(
+          req.user.userId,
+          req.body
+        );
+
+      return reply.send({
+        success: true,
+        message:
+          "Subscription purchased successfully.",
+        data: result,
+      });
+
+    } catch (error) {
+
+      return reply.code(400).send({
+        success: false,
+        message:
+          error.message,
+      });
+
+    }
+
+  };
+
+  const getSubscriptionHistory = async (req, reply) => {
+
+    try {
+
+      const result =
+        await getSubscriptionHistoryService(
+          req.user.userId
+        );
+
+      return reply.send({
+        success: true,
+        data: result,
+      });
+
+    } catch (error) {
+
+      return reply.code(400).send({
+        success: false,
+        message: error.message,
+      });
+
+    }
+
+  };
 
 module.exports = {
   saveCompanyInfo,
@@ -280,5 +359,9 @@ module.exports = {
   deleteEmployerProfile,
   getLabours,
   contactLabour,
-  getContactHistory
+  getContactHistory,
+
+  getSubscriptionPlans,
+  purchaseSubscription,
+  getSubscriptionHistory,
 };

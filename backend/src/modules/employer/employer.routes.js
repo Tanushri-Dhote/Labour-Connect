@@ -17,79 +17,103 @@ async function employerRoutes(
   );
 
   fastify.post(
-  "/business-info",
-  {
-    preHandler:
-      authenticate,
-  },
-  employerController.saveBusinessInfo
-);
+    "/business-info",
+    {
+      preHandler:
+        authenticate,
+    },
+    employerController.saveBusinessInfo
+  );
 
-fastify.post(
-  "/upload-profile-image",
-  {
-    preHandler:
-      authenticate,
-  },
-  employerController.uploadProfileImage
-);
+  fastify.post(
+    "/upload-profile-image",
+    {
+      preHandler:
+        authenticate,
+    },
+    employerController.uploadProfileImage
+  );
 
-fastify.get(
-  "/profile",
-  {
-    preHandler:
-      authenticate,
-  },
-  employerController.getEmployerProfile
-);
+  fastify.get(
+    "/profile",
+    {
+      preHandler:
+        authenticate,
+    },
+    employerController.getEmployerProfile
+  );
 
-fastify.put(
-  "/profile",
-  {
-    preHandler:
-      authenticate,
-  },
-  employerController.updateEmployerProfile
-);
+  fastify.put(
+    "/profile",
+    {
+      preHandler:
+        authenticate,
+    },
+    employerController.updateEmployerProfile
+  );
 
-fastify.delete(
-  "/profile",
-  {
-    preHandler:
-      authenticate,
-  },
-  employerController.deleteEmployerProfile
-);
+  fastify.delete(
+    "/profile",
+    {
+      preHandler:
+        authenticate,
+    },
+    employerController.deleteEmployerProfile
+  );
 
-// get with filters
-fastify.get(
-  "/labours",
-  {
-    preHandler:
-      authenticate,
-  },
-  employerController.getLabours
-);
+  // get with filters
+  fastify.get(
+    "/labours",
+    {
+      preHandler:
+        authenticate,
+    },
+    employerController.getLabours
+  );
 
-// contact creadites
-fastify.post(
-  "/contact-labour",
-  {
-    preHandler:
-      authenticate,
-  },
-  employerController.contactLabour
-);
+  // contact creadites
+  fastify.post(
+    "/contact-labour",
+    {
+      preHandler:
+        authenticate,
+    },
+    employerController.contactLabour
+  );
 
-// contact history
-fastify.get(
-  "/contact-history",
-  {
-    preHandler:
-      authenticate,
-  },
-  employerController.getContactHistory
-);
+  // contact history
+  fastify.get(
+    "/contact-history",
+    {
+      preHandler:
+        authenticate,
+    },
+    employerController.getContactHistory
+  );
+
+  fastify.get(
+    "/subscription-plans",
+    {
+      preHandler: authenticate,
+    },
+    employerController.getSubscriptionPlans
+  );
+
+  fastify.post(
+    "/purchase-subscription",
+    {
+      preHandler: authenticate,
+    },
+    employerController.purchaseSubscription
+  );
+
+  fastify.get(
+    "/subscription-history",
+    {
+      preHandler: authenticate,
+    },
+    employerController.getSubscriptionHistory
+  );
 }
 
 module.exports =

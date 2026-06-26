@@ -80,6 +80,16 @@ const employerSchema =
         type: Number,
         default: 10,
       },
+      currentPlanId: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "SubscriptionPlan",
+  default: null,
+},
+
+currentPlanName: {
+  type: String,
+  default: null,
+},
     },
     {
       timestamps: true,

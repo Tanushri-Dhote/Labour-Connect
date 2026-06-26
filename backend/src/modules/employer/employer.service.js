@@ -3,6 +3,8 @@ const User = require("../../models/User");
 const LabourProfile = require("../../models/LabourProfile");
 const EmployerContact = require("../../models/EmployerContact");
 const PlatformSetting = require("../../models/PlatformSetting");
+const SubscriptionPlan = require("../../models/SubscriptionPlan");
+const EmployerSubscription = require("../../models/EmployerSubscription");
 
 const saveCompanyInfoService = async (userId, body) => {
   const {
@@ -383,6 +385,93 @@ const getContactHistoryService = async (userId) => {
   return contacts;
 };
 
+// employer subscription plan
+const getSubscriptionPlansService = async () => {
+  const plans =
+    await SubscriptionPlan.find({
+      status: "active",
+    }).sort({
+      amount: 1,
+    });
+
+  return plans;
+};
+
+const purchaseSubscriptionService = async (
+  userId,
+  body
+) => {
+  const { planId } = body;
+
+  const employer = await Employer.findOne({
+    userId,
+  });
+
+  if (!employer) {
+    throw new Error("Employer not found");
+  }
+
+  const plan = await SubscriptionPlan.findOne({
+    _id: planId,
+    status: "active",
+  });
+
+  if (!plan) {
+    throw new Error("Subscription plan not found");
+  }
+
+  // Create Purchase History
+  const subscription =
+    await EmployerSubscription.create({
+      employerId: employer._id,
+      planId: plan._id,
+      planName: plan.name,
+      credits: plan.credits,
+      amount: plan.amount,
+      paymentStatus: "success",
+      purchaseDate: new Date(),
+    });
+
+  // Add Credits
+  employer.contactCredits += plan.credits;
+
+  // Save Current Plan
+  employer.currentPlanId = plan._id;
+  employer.currentPlanName = plan.name;
+
+  await employer.save();
+
+  return {
+    subscription,
+    remainingCredits:
+      employer.contactCredits,
+  };
+};
+
+const getSubscriptionHistoryService = async (userId) => {
+
+  const employer = await Employer.findOne({
+    userId,
+  });
+
+  if (!employer) {
+    throw new Error("Employer not found");
+  }
+
+  const subscriptions =
+    await EmployerSubscription.find({
+      employerId: employer._id,
+    })
+      .populate(
+        "planId",
+        "name credits amount description"
+      )
+      .sort({
+        purchaseDate: -1,
+      });
+
+  return subscriptions;
+};
 
 
 module.exports = {
@@ -398,4 +487,9 @@ module.exports = {
   contactLabourService,
 
   getContactHistoryService,
+
+  getSubscriptionPlansService,
+  purchaseSubscriptionService,
+  getSubscriptionHistoryService,
+  
 };

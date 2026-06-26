@@ -7,7 +7,7 @@ const Employer = require("../../models/Employer");
 const SubscriptionPlan = require("../../models/SubscriptionPlan");
 const EmployerContact = require("../../models/EmployerContact");
 const PlatformSetting = require("../../models/PlatformSetting");
-// const EmployerSubscription =require("../../models/EmployerSubscription");
+const EmployerSubscription = require("../../models/EmployerSubscription");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -80,111 +80,111 @@ const getProfileService = async (
 
 const getDashboardService = async () => {
 
-    const totalLabours =
-      await LabourProfile.countDocuments();
+  const totalLabours =
+    await LabourProfile.countDocuments();
 
-    const totalEmployers =
-      await User.countDocuments({
-        role: "employer",
-      });
+  const totalEmployers =
+    await User.countDocuments({
+      role: "employer",
+    });
 
-    const activeEmployers =
-      await User.countDocuments({
-        role: "employer",
-        status: "active",
-      });
+  const activeEmployers =
+    await User.countDocuments({
+      role: "employer",
+      status: "active",
+    });
 
-    const blockedEmployers =
-      await User.countDocuments({
-        role: "employer",
-        status: "blocked",
-      });
+  const blockedEmployers =
+    await User.countDocuments({
+      role: "employer",
+      status: "blocked",
+    });
 
-    const activeCategories =
-      await Category.countDocuments({
-        status: "active",
-      });
+  const activeCategories =
+    await Category.countDocuments({
+      status: "active",
+    });
 
-    const inactiveCategories =
-      await Category.countDocuments({
-        status: "inactive",
-      });
+  const inactiveCategories =
+    await Category.countDocuments({
+      status: "inactive",
+    });
 
-    const activeSkills =
-      await Skill.countDocuments({
-        status: "active",
-      });
+  const activeSkills =
+    await Skill.countDocuments({
+      status: "active",
+    });
 
-    const inactiveSkills =
-      await Skill.countDocuments({
-        status: "inactive",
-      });
+  const inactiveSkills =
+    await Skill.countDocuments({
+      status: "inactive",
+    });
 
-    const totalActiveUsers =
-      await User.countDocuments({
-        status: "active",
-      });
+  const totalActiveUsers =
+    await User.countDocuments({
+      status: "active",
+    });
 
-    const totalSubscriptionPlans =
-      await SubscriptionPlan.countDocuments();
+  const totalSubscriptionPlans =
+    await SubscriptionPlan.countDocuments();
 
-    const activeSubscriptionPlans =
-      await SubscriptionPlan.countDocuments({
-        status: "active",
-      });
+  const activeSubscriptionPlans =
+    await SubscriptionPlan.countDocuments({
+      status: "active",
+    });
 
-    const inactiveSubscriptionPlans =
-      await SubscriptionPlan.countDocuments({
-        status: "inactive",
-      });
+  const inactiveSubscriptionPlans =
+    await SubscriptionPlan.countDocuments({
+      status: "inactive",
+    });
 
-    const totalLaboursUnlocked =
-      await EmployerContact.countDocuments();
+  const totalLaboursUnlocked =
+    await EmployerContact.countDocuments();
 
-    // const totalSubscriptionsPurchased =
-    //   await EmployerSubscription.countDocuments();
+  const totalSubscriptionsPurchased =
+    await EmployerSubscription.countDocuments();
 
-    return {
-      totalLabours,
+  return {
+    totalLabours,
 
-      totalEmployers,
-      activeEmployers,
-      blockedEmployers,
+    totalEmployers,
+    activeEmployers,
+    blockedEmployers,
 
-      activeCategories,
-      inactiveCategories,
+    activeCategories,
+    inactiveCategories,
 
-      activeSkills,
-      inactiveSkills,
+    activeSkills,
+    inactiveSkills,
 
-      totalActiveUsers,
+    totalActiveUsers,
 
-      totalSubscriptionPlans,
-      activeSubscriptionPlans,
-      inactiveSubscriptionPlans,
+    totalSubscriptionPlans,
+    activeSubscriptionPlans,
+    inactiveSubscriptionPlans,
 
-      totalLaboursUnlocked,
+    totalLaboursUnlocked,
 
-      // totalSubscriptionsPurchased,
-    };
+    totalSubscriptionsPurchased,
   };
+};
 
 // Labour Management
 
-const getAllLaboursService =async () => {
-    return await LabourProfile.find()
-      .populate(
-        "categoryId",
-        "name"
-      )
-      .populate(
-        "skills",
-        "name"
-      )
-      .sort({
-        createdAt: -1,
-      });
-  };
+const getAllLaboursService = async () => {
+  return await LabourProfile.find()
+    .populate(
+      "categoryId",
+      "name"
+    )
+    .populate(
+      "skills",
+      "name"
+    )
+    .sort({
+      createdAt: -1,
+    });
+};
 
 const getLabourByIdService = async (
   labourId
@@ -268,311 +268,323 @@ const unblockLabourService = async (
 };
 
 const updateLabourStatusService = async (labourId, body) => {
-    const { status } = body;
+  const { status } = body;
 
-    const labour =
-      await LabourProfile.findById(
-        labourId
-      );
+  const labour =
+    await LabourProfile.findById(
+      labourId
+    );
 
-    if (!labour) {
-      throw new Error(
-        "Labour not found"
-      );
-    }
+  if (!labour) {
+    throw new Error(
+      "Labour not found"
+    );
+  }
 
-    const user =
-      await User.findByIdAndUpdate(
-        labour.userId,
-        {
-          status,
-        },
-        {
-          new: true,
-        }
-      );
+  const user =
+    await User.findByIdAndUpdate(
+      labour.userId,
+      {
+        status,
+      },
+      {
+        new: true,
+      }
+    );
 
-    return user;
-  };
+  return user;
+};
 
-  // employer-managemnet
-  const getAllEmployersService = async () => {
-    return await Employer.find()
-      .sort({
-        createdAt: -1,
-      });
-  };
+// employer-managemnet
+const getAllEmployersService = async () => {
+  return await Employer.find()
+    .sort({
+      createdAt: -1,
+    });
+};
 
 const getEmployerByIdService = async (employerId) => {
-    const employer =
-      await Employer.findById(
-        employerId
-      );
+  const employer =
+    await Employer.findById(
+      employerId
+    );
 
-    if (!employer) {
-      throw new Error(
-        "Employer not found"
-      );
-    }
+  if (!employer) {
+    throw new Error(
+      "Employer not found"
+    );
+  }
 
-    return employer;
-  };
+  return employer;
+};
 
 const blockEmployerService = async (employerId) => {
-    const employer =
-      await Employer.findById(
-        employerId
-      );
+  const employer =
+    await Employer.findById(
+      employerId
+    );
 
-    if (!employer) {
-      throw new Error(
-        "Employer not found"
-      );
-    }
+  if (!employer) {
+    throw new Error(
+      "Employer not found"
+    );
+  }
 
-    const user =
-      await User.findByIdAndUpdate(
-        employer.userId,
-        {
-          status: "blocked",
-        },
-        {
-          new: true,
-        }
-      );
+  const user =
+    await User.findByIdAndUpdate(
+      employer.userId,
+      {
+        status: "blocked",
+      },
+      {
+        new: true,
+      }
+    );
 
-    return user;
-  };
+  return user;
+};
 
 const unblockEmployerService = async (employerId) => {
-    const employer =
-      await Employer.findById(
-        employerId
-      );
+  const employer =
+    await Employer.findById(
+      employerId
+    );
 
-    if (!employer) {
-      throw new Error(
-        "Employer not found"
-      );
-    }
+  if (!employer) {
+    throw new Error(
+      "Employer not found"
+    );
+  }
 
-    const user =
-      await User.findByIdAndUpdate(
-        employer.userId,
-        {
-          status: "active",
-        },
-        {
-          new: true,
-        }
-      );
+  const user =
+    await User.findByIdAndUpdate(
+      employer.userId,
+      {
+        status: "active",
+      },
+      {
+        new: true,
+      }
+    );
 
-    return user;
-  };
+  return user;
+};
 
 const updateEmployerStatusService = async (
-    employerId,
-    body
-  ) => {
-    const { status } =
-      body;
+  employerId,
+  body
+) => {
+  const { status } =
+    body;
 
-    const employer =
-      await Employer.findById(
-        employerId
-      );
+  const employer =
+    await Employer.findById(
+      employerId
+    );
 
-    if (!employer) {
-      throw new Error(
-        "Employer not found"
-      );
-    }
+  if (!employer) {
+    throw new Error(
+      "Employer not found"
+    );
+  }
 
-    const user =
-      await User.findByIdAndUpdate(
-        employer.userId,
-        {
-          status,
-        },
-        {
-          new: true,
-        }
-      );
+  const user =
+    await User.findByIdAndUpdate(
+      employer.userId,
+      {
+        status,
+      },
+      {
+        new: true,
+      }
+    );
 
-    return user;
-  };
+  return user;
+};
 
-  // subscription plan
-  const createSubscriptionPlanService = async (body) => {
-    const {
+// subscription plan
+const createSubscriptionPlanService = async (body) => {
+  const {
+    name,
+    userType,
+    credits,
+      durationDays,
+    amount,
+    description,
+
+  } = body;
+
+  const existingPlan =
+    await SubscriptionPlan.findOne({
       name,
+      userType,
+    });
+
+  if (existingPlan) {
+    throw new Error(
+      "Subscription plan already exists"
+    );
+  }
+
+  const plan =
+    await SubscriptionPlan.create({
+      name,
+      userType,
       credits,
+        durationDays,
       amount,
       description,
-    } = body;
+    });
 
-    const existingPlan =
-      await SubscriptionPlan.findOne({
-        name,
-      });
+  return plan;
+};
 
-    if (existingPlan) {
-      throw new Error(
-        "Subscription plan already exists"
-      );
-    }
+const getAllSubscriptionPlansService = async () => {
+  return await SubscriptionPlan.find()
+    .sort({
+      createdAt: -1,
+    });
+};
 
-    const plan =
-      await SubscriptionPlan.create({
-        name,
-        credits,
-        amount,
-        description,
-      });
+const getSubscriptionPlanByIdService = async (planId) => {
+  const plan =
+    await SubscriptionPlan.findById(
+      planId
+    );
 
-    return plan;
-  };
+  if (!plan) {
+    throw new Error(
+      "Subscription plan not found"
+    );
+  }
 
-  const getAllSubscriptionPlansService = async () => {
-    return await SubscriptionPlan.find()
-      .sort({
-        createdAt: -1,
-      });
-  };
+  return plan;
+};
 
-  const getSubscriptionPlanByIdService = async (planId) => {
-    const plan =
-      await SubscriptionPlan.findById(
-        planId
-      );
+const updateSubscriptionPlanService = async (planId, body) => {
+  const {
+    name,
+    userType,
+    credits,
+      durationDays,
+    amount,
+    description,
+    status,
+  } = body;
 
-    if (!plan) {
-      throw new Error(
-        "Subscription plan not found"
-      );
-    }
+  const plan =
+    await SubscriptionPlan.findById(
+      planId
+    );
 
-    return plan;
-  };
+  if (!plan) {
+    throw new Error(
+      "Subscription plan not found"
+    );
+  }
 
-  const updateSubscriptionPlanService = async (planId, body) => {
-    const {
-      name,
-      credits,
-      amount,
-      description,
-      status,
-    } = body;
+  if (name)
+    plan.name = name;
+  if (userType)
+    plan.userType = userType;
 
-    const plan =
-      await SubscriptionPlan.findById(
-        planId
-      );
+  if (credits !== undefined)
+    plan.credits = credits;
+  if (durationDays !== undefined)
+  plan.durationDays = durationDays;
 
-    if (!plan) {
-      throw new Error(
-        "Subscription plan not found"
-      );
-    }
+  if (amount !== undefined)
+    plan.amount = amount;
 
-    if (name)
-      plan.name = name;
+  if (
+    description !== undefined
+  )
+    plan.description =
+      description;
 
-    if (credits !== undefined)
-      plan.credits = credits;
+  if (status)
+    plan.status = status;
 
-    if (amount !== undefined)
-      plan.amount = amount;
+  await plan.save();
 
-    if (
-      description !== undefined
-    )
-      plan.description =
-        description;
+  return plan;
+};
 
-    if (status)
-      plan.status = status;
+const deleteSubscriptionPlanService = async (planId) => {
+  const plan =
+    await SubscriptionPlan.findById(
+      planId
+    );
 
-    await plan.save();
+  if (!plan) {
+    throw new Error(
+      "Subscription plan not found"
+    );
+  }
 
-    return plan;
-  };
+  plan.status = "inactive";
 
-  const deleteSubscriptionPlanService = async (planId) => {
-    const plan =
-      await SubscriptionPlan.findById(
-        planId
-      );
+  await plan.save();
 
-    if (!plan) {
-      throw new Error(
-        "Subscription plan not found"
-      );
-    }
-
-    plan.status = "inactive";
-
-    await plan.save();
-
-    return plan;
-  };
+  return plan;
+};
 
 // platform seeting 
 const getPlatformSettingsService = async () => {
 
-    let settings =
-      await PlatformSetting.findOne();
+  let settings =
+    await PlatformSetting.findOne();
 
-    if (!settings) {
+  if (!settings) {
 
-      settings =
-        await PlatformSetting.create({
-          defaultEmployerCredits: 10,
-        });
+    settings =
+      await PlatformSetting.create({
+        defaultEmployerCredits: 10,
+      });
 
-    }
+  }
 
-    return settings;
-  };
+  return settings;
+};
 
-  const updatePlatformSettingsService = async (body) => {
-    const {
-      defaultEmployerCredits,
-    } = body;
+const updatePlatformSettingsService = async (body) => {
+  const {
+    defaultEmployerCredits,
+  } = body;
 
-    let settings =
-      await PlatformSetting.findOne();
+  let settings =
+    await PlatformSetting.findOne();
 
-    if (!settings) {
+  if (!settings) {
 
-      settings =
-        await PlatformSetting.create({
-          defaultEmployerCredits:
-            defaultEmployerCredits ?? 10,
-        });
-
-        return settings;
-    }
-
-    if (
-      defaultEmployerCredits !==
-      undefined
-    ) {
-      settings.defaultEmployerCredits =
-        defaultEmployerCredits;
-    }
-
-    await settings.save();
+    settings =
+      await PlatformSetting.create({
+        defaultEmployerCredits:
+          defaultEmployerCredits ?? 10,
+      });
 
     return settings;
-  };
+  }
+
+  if (
+    defaultEmployerCredits !==
+    undefined
+  ) {
+    settings.defaultEmployerCredits =
+      defaultEmployerCredits;
+  }
+
+  await settings.save();
+
+  return settings;
+};
 
 module.exports = {
   adminLoginService,
   getProfileService,
   getDashboardService,
 
-  
+
   getAllLaboursService,
   getLabourByIdService,
   blockLabourService,
