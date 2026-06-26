@@ -1,180 +1,188 @@
 const Employer = require("../../models/Employer");
 const User = require("../../models/User");
-const LabourProfile = require("../../models/LabourProfile"); 
+const LabourProfile = require("../../models/LabourProfile");
 const EmployerContact = require("../../models/EmployerContact");
+const PlatformSetting = require("../../models/PlatformSetting");
 
-const saveCompanyInfoService =async (userId, body) => {
-    const {
+const saveCompanyInfoService = async (userId, body) => {
+  const {
+    companyName,
+    contactPerson,
+    email,
+  } = body;
+
+  const user =
+    await User.findById(
+      userId
+    );
+
+  if (!user) {
+    throw new Error(
+      "User not found"
+    );
+  }
+
+  let employer =
+    await Employer.findOne({
+      userId,
+    });
+
+  if (employer) {
+    employer.companyName =
+      companyName;
+
+    employer.contactPerson =
+      contactPerson;
+
+    employer.email =
+      email;
+
+    await employer.save();
+
+    return employer;
+  }
+
+  const settings =
+    await PlatformSetting.findOne();
+
+  const defaultEmployerCredits =
+    settings?.defaultEmployerCredits || 10;
+
+  employer =
+    await Employer.create({
+      userId,
+      mobile:
+        user.mobile ||
+        user.mobileNumber,
       companyName,
       contactPerson,
       email,
-    } = body;
-
-    const user =
-      await User.findById(
-        userId
-      );
-
-    if (!user) {
-      throw new Error(
-        "User not found"
-      );
-    }
-
-    let employer =
-      await Employer.findOne({
-        userId,
-      });
-
-    if (employer) {
-      employer.companyName =
-        companyName;
-
-      employer.contactPerson =
-        contactPerson;
-
-      employer.email =
-        email;
-
-      await employer.save();
-
-      return employer;
-    }
-
-    employer =
-      await Employer.create({
-        userId,
-        mobile:
-          user.mobile ||
-          user.mobileNumber,
-        companyName,
-        contactPerson,
-        email,
-      });
-
-    return employer;
-  };
+      contactCredits:
+        defaultEmployerCredits,
+    });
+  return employer;
+};
 
 const saveBusinessInfoService = async (userId, body) => {
-    const {
-      companyType,
-      gstNumber,
-      address,
-      city,
-      state,
-    } = body;
+  const {
+    companyType,
+    gstNumber,
+    address,
+    city,
+    state,
+  } = body;
 
-    const employer =
-      await Employer.findOne({
-        userId,
-      });
+  const employer =
+    await Employer.findOne({
+      userId,
+    });
 
-    if (!employer) {
-      throw new Error(
-        "Employer profile not found. Complete company information first."
-      );
-    }
+  if (!employer) {
+    throw new Error(
+      "Employer profile not found. Complete company information first."
+    );
+  }
 
-    employer.companyType =
-      companyType;
+  employer.companyType =
+    companyType;
 
-    employer.gstNumber =
-      gstNumber;
+  employer.gstNumber =
+    gstNumber;
 
-    employer.address =
-      address;
+  employer.address =
+    address;
 
-    employer.city = city;
+  employer.city = city;
 
-    employer.state =
-      state;
+  employer.state =
+    state;
 
-    await employer.save();
+  await employer.save();
 
-    return employer;
-  };
+  return employer;
+};
 
-  const uploadProfileImageService = async (userId, imageUrl) => {
-    const employer =
-      await Employer.findOne({
-        userId,
-      });
+const uploadProfileImageService = async (userId, imageUrl) => {
+  const employer =
+    await Employer.findOne({
+      userId,
+    });
 
-    if (!employer) {
-      throw new Error(
-        "Employer profile not found"
-      );
-    }
+  if (!employer) {
+    throw new Error(
+      "Employer profile not found"
+    );
+  }
 
-    employer.profileImage =
-      imageUrl;
+  employer.profileImage =
+    imageUrl;
 
-    employer.isProfileCompleted =
-      true;
+  employer.isProfileCompleted =
+    true;
 
-    await employer.save();
+  await employer.save();
 
-    return employer;
-  };
+  return employer;
+};
 
 const getEmployerProfileService = async (userId) => {
-    const employer =
-      await Employer.findOne({
-        userId,
-      });
+  const employer =
+    await Employer.findOne({
+      userId,
+    });
 
-    if (!employer) {
-      throw new Error(
-        "Employer profile not found"
-      );
-    }
+  if (!employer) {
+    throw new Error(
+      "Employer profile not found"
+    );
+  }
 
-    return employer;
-  };
+  return employer;
+};
 
 const updateEmployerProfileService = async (userId, body) => {
-    const employer =
-      await Employer.findOne({
-        userId,
-      });
+  const employer =
+    await Employer.findOne({
+      userId,
+    });
 
-    if (!employer) {
-      throw new Error(
-        "Employer profile not found"
-      );
-    }
-
-    Object.assign(
-      employer,
-      body
+  if (!employer) {
+    throw new Error(
+      "Employer profile not found"
     );
+  }
 
-    await employer.save();
+  Object.assign(
+    employer,
+    body
+  );
 
-    return employer;
-  };
+  await employer.save();
+
+  return employer;
+};
 
 const deleteEmployerProfileService = async (userId) => {
-    const employer =
-      await Employer.findOne({
-        userId,
-      });
+  const employer =
+    await Employer.findOne({
+      userId,
+    });
 
-    if (!employer) {
-      throw new Error(
-        "Employer profile not found"
-      );
-    }
+  if (!employer) {
+    throw new Error(
+      "Employer profile not found"
+    );
+  }
 
-    employer.status =
-      "inactive";
+  employer.status =
+    "inactive";
 
-    await employer.save();
+  await employer.save();
 
-    return employer;
-  };
+  return employer;
+};
 
-  // labour list with filter
+// labour list with filter
 const getLaboursService = async (queryParams) => {
   const {
     search,
@@ -339,41 +347,41 @@ const contactLabourService = async (
 
 // contact history
 const getContactHistoryService = async (userId) => {
-    const employer =
-      await Employer.findOne({
-        userId,
+  const employer =
+    await Employer.findOne({
+      userId,
+    });
+
+  if (!employer) {
+    throw new Error(
+      "Employer not found"
+    );
+  }
+
+  const contacts =
+    await EmployerContact.find({
+      employerId:
+        employer._id,
+    })
+      .populate({
+        path: "labourId",
+        populate: [
+          {
+            path: "categoryId",
+            select: "name",
+          },
+          {
+            path: "skills",
+            select: "name",
+          },
+        ],
+      })
+      .sort({
+        createdAt: -1,
       });
 
-    if (!employer) {
-      throw new Error(
-        "Employer not found"
-      );
-    }
-
-    const contacts =
-      await EmployerContact.find({
-        employerId:
-          employer._id,
-      })
-        .populate({
-          path: "labourId",
-          populate: [
-            {
-              path: "categoryId",
-              select: "name",
-            },
-            {
-              path: "skills",
-              select: "name",
-            },
-          ],
-        })
-        .sort({
-          createdAt: -1,
-        });
-
-    return contacts;
-  };
+  return contacts;
+};
 
 
 
@@ -385,9 +393,9 @@ module.exports = {
   updateEmployerProfileService,
   deleteEmployerProfileService,
 
-   getLaboursService,
+  getLaboursService,
 
-   contactLabourService,
+  contactLabourService,
 
-   getContactHistoryService,
+  getContactHistoryService,
 };

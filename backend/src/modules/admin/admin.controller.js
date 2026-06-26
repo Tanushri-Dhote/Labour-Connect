@@ -8,6 +8,9 @@ const {
    createSubscriptionPlanService, getAllSubscriptionPlansService, getSubscriptionPlanByIdService,updateSubscriptionPlanService,
   deleteSubscriptionPlanService,
 
+  // platform setting
+  getPlatformSettingsService, updatePlatformSettingsService
+
 
 } = require("./admin.service");
 
@@ -397,6 +400,58 @@ const getAllSubscriptionPlans =async (req, reply) => {
     }
   };
 
+  // platform setting
+
+  const getPlatformSettings = async (req, reply) => {
+    try {
+
+      const result =
+        await getPlatformSettingsService();
+
+      return reply.send({
+        success: true,
+        data: result,
+      });
+
+    } catch (error) {
+
+      return reply.code(400).send({
+        success: false,
+        message: error.message,
+      });
+
+    }
+  };
+
+  const updatePlatformSettings = async (req, reply) => {
+
+    try {
+
+      const result =
+        await updatePlatformSettingsService(
+          req.body
+        );
+
+      return reply.send({
+        success: true,
+        message:
+          "Platform settings updated successfully",
+        data: result,
+      });
+
+    } catch (error) {
+
+      return reply.code(400).send({
+        success: false,
+        message:
+          error.message,
+      });
+
+    }
+
+  };
+
+
 module.exports = {
   login,
   getProfile,
@@ -419,4 +474,7 @@ module.exports = {
    getSubscriptionPlanById,
    updateSubscriptionPlan,
    deleteSubscriptionPlan,
+
+   getPlatformSettings,
+   updatePlatformSettings,
 };

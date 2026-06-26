@@ -150,6 +150,24 @@ async function adminRoutes(
     },
     adminController.deleteSubscriptionPlan
   );
+
+
+  // platform setting
+  fastify.get(
+    "/settings",
+    {
+      preHandler: adminAuth,
+    },
+    adminController.getPlatformSettings
+  );
+
+  fastify.put(
+  "/settings",
+  {
+      preHandler: adminAuth,
+  },
+  adminController.updatePlatformSettings
+);
 }
 
 module.exports = adminRoutes;

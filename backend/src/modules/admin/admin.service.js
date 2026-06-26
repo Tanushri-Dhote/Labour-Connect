@@ -6,6 +6,7 @@ const Skill = require("../../models/Skill");
 const Employer = require("../../models/Employer");
 const SubscriptionPlan = require("../../models/SubscriptionPlan");
 const EmployerContact = require("../../models/EmployerContact");
+const PlatformSetting = require("../../models/PlatformSetting");
 // const EmployerSubscription =require("../../models/EmployerSubscription");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -516,6 +517,56 @@ const updateEmployerStatusService = async (
     return plan;
   };
 
+// platform seeting 
+const getPlatformSettingsService = async () => {
+
+    let settings =
+      await PlatformSetting.findOne();
+
+    if (!settings) {
+
+      settings =
+        await PlatformSetting.create({
+          defaultEmployerCredits: 10,
+        });
+
+    }
+
+    return settings;
+  };
+
+  const updatePlatformSettingsService = async (body) => {
+    const {
+      defaultEmployerCredits,
+    } = body;
+
+    let settings =
+      await PlatformSetting.findOne();
+
+    if (!settings) {
+
+      settings =
+        await PlatformSetting.create({
+          defaultEmployerCredits:
+            defaultEmployerCredits ?? 10,
+        });
+
+        return settings;
+    }
+
+    if (
+      defaultEmployerCredits !==
+      undefined
+    ) {
+      settings.defaultEmployerCredits =
+        defaultEmployerCredits;
+    }
+
+    await settings.save();
+
+    return settings;
+  };
+
 module.exports = {
   adminLoginService,
   getProfileService,
@@ -539,4 +590,7 @@ module.exports = {
   getSubscriptionPlanByIdService,
   updateSubscriptionPlanService,
   deleteSubscriptionPlanService,
+
+  getPlatformSettingsService,
+  updatePlatformSettingsService,
 };
