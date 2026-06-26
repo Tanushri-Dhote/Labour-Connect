@@ -15,7 +15,15 @@ const employerRoutes = require("./modules/employer/employer.routes");
   
 
 const app = Fastify({
-  logger: true
+  logger: {
+    transport: {
+      target: "pino-pretty",
+      options: {
+        translateTime: "HH:MM:ss Z",
+        ignore: "pid,hostname",
+      },
+    },
+  },
 });
 
 app.register(helmet);

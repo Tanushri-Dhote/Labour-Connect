@@ -21,6 +21,14 @@ async function adminRoutes(
   );
 
   fastify.get(
+    "/admins",
+    {
+      preHandler: adminAuth,
+    },
+    adminController.getAllAdmins
+  );
+
+  fastify.get(
     "/dashboard",
     {
       preHandler: adminAuth,

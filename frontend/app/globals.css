@@ -7,7 +7,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-heading), var(--font-hindi), sans-serif;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, var(--font-hindi), sans-serif;
   --font-heading: var(--font-heading), var(--font-hindi), serif;
   --font-hindi: var(--font-hindi), var(--font-heading), serif;
   --color-sidebar-ring: var(--sidebar-ring);

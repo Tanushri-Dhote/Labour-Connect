@@ -78,6 +78,10 @@ const getProfileService = async (
   return admin;
 };
 
+const getAllAdminsService = async () => {
+  return await Admin.find().select("-password").sort({ createdAt: -1 });
+};
+
 const getDashboardService = async () => {
 
   const totalLabours =
@@ -171,20 +175,24 @@ const getDashboardService = async () => {
 
 // Labour Management
 
-const getAllLaboursService = async () => {
-  return await LabourProfile.find()
-    .populate(
-      "categoryId",
-      "name"
-    )
-    .populate(
-      "skills",
-      "name"
-    )
-    .sort({
-      createdAt: -1,
-    });
-};
+const getAllLaboursService =async () => {
+    return await LabourProfile.find()
+      .populate(
+        "userId",
+        "mobile status"
+      )
+      .populate(
+        "categoryId",
+        "name"
+      )
+      .populate(
+        "skills",
+        "name"
+      )
+      .sort({
+        createdAt: -1,
+      });
+  };
 
 const getLabourByIdService = async (
   labourId
@@ -193,6 +201,10 @@ const getLabourByIdService = async (
     await LabourProfile.findById(
       labourId
     )
+      .populate(
+        "userId",
+        "mobile status"
+      )
       .populate(
         "categoryId",
         "name"
@@ -268,40 +280,52 @@ const unblockLabourService = async (
 };
 
 const updateLabourStatusService = async (labourId, body) => {
-  const { status } = body;
+    const { status, adminApprovalStatus } = body;
 
-  const labour =
-    await LabourProfile.findById(
-      labourId
-    );
+    const labour =
+      await LabourProfile.findById(
+        labourId
+      );
 
-  if (!labour) {
-    throw new Error(
-      "Labour not found"
-    );
-  }
+    if (!labour) {
+      throw new Error(
+        "Labour not found"
+      );
+    }
 
-  const user =
-    await User.findByIdAndUpdate(
-      labour.userId,
-      {
-        status,
-      },
-      {
-        new: true,
-      }
-    );
+    if (adminApprovalStatus) {
+      labour.adminApprovalStatus = adminApprovalStatus;
+      await labour.save();
+    }
 
-  return user;
-};
+    let user = null;
+    if (status) {
+      user =
+        await User.findByIdAndUpdate(
+          labour.userId,
+          {
+            status,
+          },
+          {
+            new: true,
+          }
+        );
+    }
 
-// employer-managemnet
-const getAllEmployersService = async () => {
-  return await Employer.find()
-    .sort({
-      createdAt: -1,
-    });
-};
+    return { labour, user };
+  };
+
+  // employer-managemnet
+  const getAllEmployersService = async () => {
+    return await Employer.find()
+      .populate(
+        "userId",
+        "mobile status"
+      )
+      .sort({
+        createdAt: -1,
+      });
+  };
 
 const getEmployerByIdService = async (employerId) => {
   const employer =
@@ -582,6 +606,7 @@ const updatePlatformSettingsService = async (body) => {
 module.exports = {
   adminLoginService,
   getProfileService,
+  getAllAdminsService,
   getDashboardService,
 
 

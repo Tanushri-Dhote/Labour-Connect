@@ -91,7 +91,7 @@ export function Hero({ lang }: HeroProps) {
             {/* Neo-brutalist Buttons (Solid black border, solid offset black shadow) */}
             <div className="mt-8 flex w-full flex-col gap-5 sm:flex-row sm:justify-center lg:justify-start">
               <a 
-                href="#download" 
+                href="/register" 
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-green hover:bg-brand-green-hover px-7 py-4 text-base font-black text-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer"
               >
                 <span>{t[lang].ctaWorker}</span>

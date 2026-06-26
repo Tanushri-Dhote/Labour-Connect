@@ -1,5 +1,5 @@
 const {
-  adminLoginService, getProfileService, getDashboardService,
+  adminLoginService, getProfileService, getAllAdminsService, getDashboardService,
   // labour
   getAllLaboursService, getLabourByIdService, blockLabourService, unblockLabourService, updateLabourStatusService,
   // employer
@@ -53,6 +53,24 @@ const getProfile = async (
     return reply.send({
       success: true,
       data: admin,
+    });
+  } catch (error) {
+    return reply.code(400).send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const getAllAdmins = async (
+  request,
+  reply
+) => {
+  try {
+    const admins = await getAllAdminsService();
+    return reply.send({
+      success: true,
+      data: admins,
     });
   } catch (error) {
     return reply.code(400).send({
@@ -455,6 +473,7 @@ const getAllSubscriptionPlans =async (req, reply) => {
 module.exports = {
   login,
   getProfile,
+  getAllAdmins,
   getDashboard,
 
   getAllLabours,
