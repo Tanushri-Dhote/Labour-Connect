@@ -9,10 +9,26 @@ const subscriptionPlanSchema =
         required: true,
         trim: true,
       },
+      userType: {
+        type: String,
+        enum: ["employer", "labour"],
+        required: true,
+      },
 
       credits: {
         type: Number,
-        required: true,
+        required: function () {
+          return this.userType === "employer";
+        },
+        default: null,
+      },
+
+      durationDays: {
+        type: Number,
+        required: function () {
+          return this.userType === "labour";
+        },
+        default: null,
       },
 
       amount: {
